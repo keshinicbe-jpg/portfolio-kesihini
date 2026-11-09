@@ -1,17 +1,25 @@
 
+// ==============================
 // MOBILE NAVIGATION
+// ==============================
 
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
 menuToggle.addEventListener("click", function () {
 
-    navLinks.classList.toggle("active");
+    const isOpen = navLinks.classList.toggle("active");
+
+    menuToggle.setAttribute("aria-expanded", isOpen);
+
+    menuToggle.innerHTML = isOpen
+        ? '<i class="fas fa-times"></i>'
+        : '<i class="fas fa-bars"></i>';
 
 });
 
 
-// CLOSE MOBILE MENU AFTER CLICKING A LINK
+// CLOSE MENU AFTER CLICKING A LINK
 
 document.querySelectorAll(".nav-links a").forEach(function (link) {
 
@@ -19,47 +27,69 @@ document.querySelectorAll(".nav-links a").forEach(function (link) {
 
         navLinks.classList.remove("active");
 
+        menuToggle.setAttribute("aria-expanded", "false");
+
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+
     });
 
 });
 
 
-// FOOTER YEAR
+// ==============================
+// AUTOMATIC FOOTER YEAR
+// ==============================
 
 document.getElementById("year").textContent =
     new Date().getFullYear();
 
 
-// SCROLL REVEAL ANIMATION
+// ==============================
+// SCROLL REVEAL
+// ==============================
 
 const revealElements = document.querySelectorAll(".reveal");
 
-const observer = new IntersectionObserver(function (entries) {
+if ("IntersectionObserver" in window) {
 
-    entries.forEach(function (entry) {
+    const observer = new IntersectionObserver(function (entries) {
 
-        if (entry.isIntersecting) {
+        entries.forEach(function (entry) {
 
-            entry.target.classList.add("active");
+            if (entry.isIntersecting) {
 
-            observer.unobserve(entry.target);
+                entry.target.classList.add("active");
 
-        }
+                observer.unobserve(entry.target);
+
+            }
+
+        });
+
+    }, {
+        threshold: 0.12
+    });
+
+    revealElements.forEach(function (element) {
+
+        observer.observe(element);
 
     });
 
-}, {
-    threshold: 0.12
-});
+} else {
 
-revealElements.forEach(function (element) {
+    revealElements.forEach(function (element) {
 
-    observer.observe(element);
+        element.classList.add("active");
 
-});
+    });
+
+}
 
 
-// CONTACT FORM - OPEN GMAIL COMPOSE
+// ==============================
+// CONTACT FORM - GMAIL
+// ==============================
 
 const contactForm = document.getElementById("contactForm");
 
@@ -78,7 +108,7 @@ contactForm.addEventListener("submit", function (event) {
 
     if (!name || !email || !subject || !message) {
 
-        alert("Please fill in all the fields.");
+        alert("Please complete all fields.");
 
         return;
 
@@ -103,9 +133,14 @@ contactForm.addEventListener("submit", function (event) {
         "&body=" + emailBody;
 
 
-    window.open(gmailURL, "_blank", "noopener,noreferrer");
+    const newWindow = window.open(
+        gmailURL,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
 
     document.getElementById("formNote").textContent =
-        "Gmail opened. Please review your message and click Send.";
+        "Please send your message from the Gmail window that opens.";
 
 });
